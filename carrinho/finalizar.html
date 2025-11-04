@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Finalizar Compra</title>
+      <link rel="stylesheet" href="carrinho.css" />
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+    <!-- Seu CSS personalizado -->
+    <link rel="stylesheet" href="./Estilo/style.css">
+    <!-- Bootstrap Icons -->
+  <!-- Bootstrap CSS -->
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&display=swap" rel="stylesheet">
+  
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg px-4">
+        <div class="container-fluid justify-content-between align-items-center">
+      
+          <!-- Esquerda -->
+          <div class="d-flex align-items-center gap-4 me-5">
+            <a class="nav-link text-decoration-none" href="#">Maquiagem</a>
+            <a class="nav-link text-decoration-none" href="#">Skin Care</a>
+          </div>
+      
+          <!-- Centro: Logo -->
+          <a class="navbar-brand position-absolute start-50 translate-middle-x" href="tela-login&cadastro-final/tela-login/telalogin.html">
+            G <span>✦</span> W
+          </a>
+      
+          <!-- Direita -->
+          <div class="d-flex align-items-center gap-3 ms-5">
+            <!-- Busca -->
+            <form class="d-flex" role="search">
+              <input class="form-control form-control-sm px-3" type="search" placeholder="Buscar..." aria-label="Buscar">
+            </form>
+      
+            <!-- Ícones -->
+            <a href="#" class="text-dark" title="Carrinho">
+              <i class="bi bi-bag-heart-fill fs-5"></i>
+            </a>
+            <a href="perfil.html" class="text-dark" title="Perfil">
+  <i class="bi bi-person-circle fs-5"></i>
+</a>
+          </div>
+        </div>
+      </nav>
+<body>
+  <main>
+    <div class="cart-body">
+      <!-- Lado esquerdo: dados de envio -->
+      <div class="products" id="shipping-panel">
+        <h3>Informações de Envio</h3>
+        <form id="shipping-form">
+          <label>Nome de quem recebe:</label>
+          <input type="text" id="ship-name" required>
+
+          <label>Telefone:</label>
+          <input type="text" id="ship-phone" required>
+
+          <label>Endereço (rua):</label>
+          <input type="text" id="ship-street" required>
+
+          <label>Nº:</label>
+          <input type="text" id="ship-number" required>
+
+          <label>Complemento:</label>
+          <input type="text" id="ship-complement">
+
+          <label>Cidade:</label>
+          <input type="text" id="ship-city" required>
+
+          <label>Estado:</label>
+          <input type="text" id="ship-state" required>
+
+          <label>CEP:</label>
+          <input type="text" id="ship-cep" required>
+
+          <button type="submit" id="finalize-btn" class="button">Finalizar Compra</button>
+        </form>
+      </div>
+
+      <!-- Lado direito: imagem/frase ou formulário do cartão -->
+      <div class="resume" id="payment-section">
+        <!-- Será preenchido por finalizar.js -->
+      </div>
+    </div>
+  </main>
+
+  <script src="finalizar.js"></script>
+</body>
+</html>
