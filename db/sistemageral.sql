@@ -3,8 +3,8 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 04/11/2025 às 23:58
--- Versão do servidor: 10.4.32-MariaDB
+-- Tempo de geração: 09/12/2025 às 07:34
+-- Versão do servidor: 8.0.44
 -- Versão do PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -28,10 +28,10 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `admistrador` (
-  `id` int(11) NOT NULL,
-  `Nome` varchar(100) NOT NULL,
-  `Email` varchar(100) NOT NULL,
-  `Senha` varchar(255) NOT NULL
+  `id` int NOT NULL,
+  `Nome` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `Email` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `Senha` varchar(255) COLLATE utf8mb4_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -48,10 +48,10 @@ INSERT INTO `admistrador` (`id`, `Nome`, `Email`, `Senha`) VALUES
 --
 
 CREATE TABLE `pedidos` (
-  `id` int(11) NOT NULL,
-  `cliente` varchar(100) NOT NULL,
-  `produto` varchar(100) NOT NULL,
-  `Quantidade` int(11) NOT NULL,
+  `id` int NOT NULL,
+  `cliente` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `produto` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `Quantidade` int NOT NULL,
   `preco_unitario` decimal(10,2) NOT NULL,
   `data_pedido` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -70,12 +70,12 @@ INSERT INTO `pedidos` (`id`, `cliente`, `produto`, `Quantidade`, `preco_unitario
 --
 
 CREATE TABLE `produtos` (
-  `id` int(11) NOT NULL,
-  `nome` varchar(100) NOT NULL,
-  `imagem` varchar(500) NOT NULL,
-  `descricao` text NOT NULL,
+  `id` int NOT NULL,
+  `nome` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `imagem` varchar(500) COLLATE utf8mb4_general_ci NOT NULL,
+  `descricao` text COLLATE utf8mb4_general_ci NOT NULL,
   `preco` decimal(10,2) NOT NULL,
-  `estoque` int(11) NOT NULL
+  `estoque` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -92,21 +92,22 @@ INSERT INTO `produtos` (`id`, `nome`, `imagem`, `descricao`, `preco`, `estoque`)
 --
 
 CREATE TABLE `usuarios` (
-  `id` int(11) NOT NULL,
-  `usuario` varchar(100) NOT NULL,
-  `nome_completo` varchar(100) NOT NULL,
-  `email` varchar(100) NOT NULL,
-  `senha` varchar(255) NOT NULL,
-  `data_cadastro` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `id` int NOT NULL,
+  `usuario` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `nome_completo` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `email` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `foto` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `senha` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `data_cadastro` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Despejando dados para a tabela `usuarios`
 --
 
-INSERT INTO `usuarios` (`id`, `usuario`, `nome_completo`, `email`, `senha`, `data_cadastro`) VALUES
-(1, 'usuario', 'usuario one', 'teste@gmail.com', '$2y$10$tIjzuufAWzDwkjnuZz0JJ.SNKXgakBdbB3mzaiBRDmgoCzz6a.V3e', '2025-11-05 02:56:11'),
-(2, 'usuario', 'usuario one', 'teste@gmail.com', '$2y$10$yqipriPRl2OygWU0aTymk.Pnhlp.iDEeov8ltKhVsGDyrZWPfr2l2', '2025-11-05 02:57:58');
+INSERT INTO `usuarios` (`id`, `usuario`, `nome_completo`, `email`, `foto`, `senha`, `data_cadastro`) VALUES
+(6, 'davi', 'davi valetins', 'davivalentns@gmail.com', 'user_6_1765259859.jpg', '$2y$10$7QIKfiizqDoxSECE4.XQxOIocw4IRxJcZFh8WD2IxFJE8N9Fm43pa', '2025-12-09 05:57:39'),
+(7, 'esterr', 'ester ferreira', 'ester@gmail.com', 'user_7_1765260102.PNG', '$2y$10$K01igS2CRDAv4oTebK7EQOB1YQm5B9BlS9TQc.Ygeq8/g5SKdqYei', '2025-12-09 06:01:42');
 
 --
 -- Índices para tabelas despejadas
@@ -144,25 +145,25 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de tabela `admistrador`
 --
 ALTER TABLE `admistrador`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de tabela `pedidos`
 --
 ALTER TABLE `pedidos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de tabela `produtos`
 --
 ALTER TABLE `produtos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de tabela `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
