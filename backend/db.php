@@ -2,7 +2,7 @@
 $host = 'localhost';
 $db = 'sistemageral';
 $user = 'root';
-$pass = ''; // se tiver senha, coloque aqui
+$pass = 'root'; // se tiver senha, coloque aqui
 
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$db;charset=utf8", $user, $pass);

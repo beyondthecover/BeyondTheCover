@@ -1,3 +1,21 @@
+<?php
+session_start();
+require_once './backend/db.php'; 
+$fotoUsuario = './uploads/default.jpg';
+
+
+if (isset($_SESSION['id_usuario'])) {
+  $sqlFoto = $pdo->prepare("SELECT foto FROM usuarios WHERE id = :id LIMIT 1");
+  $sqlFoto->bindParam(':id', $_SESSION['id_usuario'], PDO::PARAM_INT);
+  $sqlFoto->execute();
+  $dadosFoto = $sqlFoto->fetch(PDO::FETCH_ASSOC);
+
+  if ($dadosFoto && !empty($dadosFoto['foto'])) {
+    $fotoUsuario = './uploads/' . $dadosFoto['foto'];
+  }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="pt-br">
 
@@ -36,8 +54,7 @@
       </div>
 
       <!-- Centro: Logo -->
-      <a class="navbar-brand position-absolute start-50 translate-middle-x"
-        href="index.html">
+      <a class="navbar-brand position-absolute start-50 translate-middle-x" href="index.html">
         G <span>✦</span> W
       </a>
 
@@ -48,22 +65,28 @@
           <input class="form-control form-control-sm px-3" type="search" placeholder="Buscar..." aria-label="Buscar">
         </form>
 
-        <div class="links-conta">
-          <a href="tela-login&cadastro-final/tela de cadastro/telacadastro.html" target="_blank">
-            Criar Conta
-          </a>
-          <span>ou</span>
-          <a href="tela-login&cadastro-final/tela-login/telalogin.html" target="_blank">
-            Login
-          </a>
-        </div>
+        <?php if (isset($_SESSION['id_usuario'])): ?>
+          <div class="links-conta">
+            👋 Olá, <strong><?= $_SESSION['nome_completo'] ?></strong>
+            <a href="./backend/logout.php" class="text-danger ms-2">(Sair)</a>
+          </div>
+        <?php else: ?>
+          <div class="links-conta">
+            <a href="tela-login&cadastro-final/tela de cadastro/telacadastro.html">Criar Conta</a>
+            <span>ou</span>
+            <a href="tela-login&cadastro-final/tela-login/telalogin.html">Login</a>
+          </div>
+        <?php endif; ?>
+
+
 
         <!-- Ícones -->
-        <a href="carrinho/carrinho.html" class="text-dark" title="Carrinho">
+        <a href="carrinho/carrinho.php" class="text-dark" title="Carrinho">
           <i class="bi bi-bag-heart-fill fs-5"></i>
         </a>
-        <a href="perfil.html" class="text-dark" title="Perfil">
-          <i class="bi bi-person-circle fs-5"></i>
+        <a href="perfil.php" class="text-dark d-flex align-items-center" title="Perfil">
+          <img src="<?php echo $fotoUsuario; ?>" alt="Perfil"
+            style="width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 2px solid #ddd;">
         </a>
       </div>
     </div>

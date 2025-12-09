@@ -4,9 +4,47 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>informações do produto</title>
-  <link rel="stylesheet" href="style.css " />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Toast de notificação */
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #28a745;
+      color: white;
+      padding: 15px 25px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      z-index: 9999;
+      display: none;
+      animation: slideIn 0.3s ease;
+    }
+
+    .toast.show {
+      display: block;
+    }
+
+    .toast.error {
+      background: #dc3545;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+  </style>
 </head>
 <body>
+  <!-- Toast de notificação -->
+  <div class="toast" id="toast"></div>
+
   <div class="container">
     <div class="left">
       <div class="carousel">
@@ -14,7 +52,7 @@
         <div class="carousel-buttons">
           <button onclick="prevImage()">‹</button>
           <button onclick="nextImage()">›</button>
-        </div>n
+        </div>
       </div>
       <div class="thumbs" id="thumbnails"></div>
       <div class="caption">Drunk Elephant Protini Polypeptide Cream</div>
@@ -28,12 +66,75 @@
         A fórmula é vegana, livre de fragrâncias e adequada para todos os tipos de pele, inclusive as sensíveis. Apesar da textura rica, é de rápida absorção e ideal para uso noturno.
       </div>
       <div class="buttons">
-        <button class="add-cart">adc. ao carrinho</button>
+        <button class="add-cart" onclick="adicionarAoCarrinho()">adc. ao carrinho</button>
         <button class="add-fav">adc. aos favoritos</button>
       </div>
     </div>
   </div>
 
   <script src="script.js"></script>
+  <script>
+    // Dados do produto
+    const produto = {
+      id: 1,
+      nome: 'Drunk Elephant Protini Polypeptide Cream',
+      preco: 280,
+      imagem: '../info/imgs/imgprod.png',
+      quantidade: 1
+    };
+
+    // Função para adicionar ao carrinho
+    function adicionarAoCarrinho() {
+      // Pegar carrinho atual do localStorage
+      let carrinho = JSON.parse(localStorage.getItem('carrinho')) || [];
+      
+      // Verificar se o produto já existe no carrinho
+      const produtoExistente = carrinho.find(item => item.id === produto.id);
+      
+      if (produtoExistente) {
+        // Se já existe, aumenta a quantidade
+        produtoExistente.quantidade++;
+        mostrarToast('Quantidade atualizada no carrinho!');
+      } else {
+        // Se não existe, adiciona
+        carrinho.push({...produto});
+        mostrarToast('Produto adicionado ao carrinho!');
+      }
+      
+      // Salvar no localStorage
+      localStorage.setItem('carrinho', JSON.stringify(carrinho));
+      
+      // Atualizar contador do carrinho (se existir)
+      atualizarContadorCarrinho();
+      
+      // Redirecionar para o carrinho após 1 segundo
+      setTimeout(() => {
+        window.location.href = '../carrinho/carrinho.php';
+      }, 1000);
+    }
+
+    // Função para mostrar notificação
+    function mostrarToast(mensagem, tipo = 'success') {
+      const toast = document.getElementById('toast');
+      toast.textContent = mensagem;
+      toast.className = 'toast show ' + (tipo === 'error' ? 'error' : '');
+      
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+
+    // Atualizar contador do carrinho
+    function atualizarContadorCarrinho() {
+      const carrinho = JSON.parse(localStorage.getItem('carrinho')) || [];
+      const total = carrinho.reduce((sum, item) => sum + item.quantidade, 0);
+      
+      // Se tiver um elemento de contador na navbar, atualiza
+      const contador = document.querySelector('.cart-count');
+      if (contador) {
+        contador.textContent = total;
+      }
+    }
+  </script>
 </body>
 </html>

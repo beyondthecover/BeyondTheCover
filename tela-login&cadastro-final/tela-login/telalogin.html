@@ -16,17 +16,17 @@
         <button class="tab"><a href="../tela de cadastro/telacadastro.html">Cadastro</a></button>
       </div>
       <h1 class="welcome">Bem-vindo(a)<br>devolta!</h1>
-      <form>
+      <form action="../../backend/login.php" method="post">
         <div class="form-group">
           <label for="email"></label>
-          <input type="email" id="email" placeholder="Digite seu Email">
+          <input type="email" name="email" id="email" placeholder="Digite seu Email">
         </div>
         <div class="form-group">
           <label for="senha"></label>
-          <input type="password" id="senha" placeholder="Digite sua Senha">
+          <input type="password" name="senha" id="senha" placeholder="Digite sua Senha">
         </div>
         
-        <button type="submit" class="login-button"><a href="../../index.html">Fazer login</a></button>
+        <button type="submit" class="login-button">Fazer login</button>
       </form>
       <div class="register-link">
         Ainda não possui uma conta? <a href="../tela de cadastro/telacadastro.html">Cadastre-se</a>

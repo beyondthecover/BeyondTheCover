@@ -14,7 +14,7 @@
       cartAlert = document.createElement("div");
       cartAlert.id = "cart-alert";
       cartAlert.className = "cart-alert";
-      cartAlert.style.display = "none";
+      cartAlert.style.cssText = "display:none;padding:12px;border-radius:8px;margin-bottom:15px;font-weight:500;text-align:center;";
       resumeEl.insertBefore(cartAlert, resumeEl.firstChild);
     }
 
@@ -26,8 +26,8 @@
       cartTotalEl = document.querySelector(".total-cart");
     }
 
-    // carrega carrinho do localStorage (se existir)
-    let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    // MESCLAR: usar 'carrinho' para compatibilidade com o código anterior
+    let cart = JSON.parse(localStorage.getItem("carrinho") || localStorage.getItem("cart") || "[]");
 
     // pagamento selecionado (puxa do localStorage se existir)
     let selectedPayment = localStorage.getItem("paymentMethod") || null;
@@ -38,9 +38,6 @@
     const optionsList = document.querySelector(".options");
     const optionsItems = document.querySelectorAll(".options li");
 
-    // rádios (caso use radio buttons em outra versão)
-    const radioPayments = Array.from(document.querySelectorAll("input[name='payment'], input[name='payment-method']"));
-
     // util: formata BRL
     function formatBRL(value) {
       const n = Number(value) || 0;
@@ -49,7 +46,8 @@
 
     // salva cart e payment no localStorage
     function saveState() {
-      localStorage.setItem("cart", JSON.stringify(cart));
+      localStorage.setItem("carrinho", JSON.stringify(cart));
+      localStorage.setItem("cart", JSON.stringify(cart)); // backup
       if (selectedPayment) localStorage.setItem("paymentMethod", selectedPayment);
     }
 
@@ -76,7 +74,7 @@
       cartAlert.textContent = "";
     }
 
-    // renderiza o carrinho (produtos)
+    // renderiza o carrinho (produtos) - MESCLADO
     function renderCart() {
       if (!productsContainer) return;
       productsContainer.innerHTML = "";
@@ -98,54 +96,40 @@
       }
 
       cart.forEach((item, index) => {
+        // Compatibilidade: aceita tanto 'imagem' quanto 'img', 'preco' quanto 'price', etc
+        const itemNome = item.nome || item.name || "Produto";
+        const itemPreco = Number(item.preco || item.price || 0);
+        const itemImagem = item.imagem || item.img || "https://via.placeholder.com/80";
+        const itemQtd = Number(item.quantidade || item.qty || 1);
+
         const itemDiv = document.createElement("div");
-        itemDiv.className = "item";
+        itemDiv.className = "cart-item";
 
         // subtotal
-        const subtotal = (Number(item.price) || 0) * (Number(item.qty) || 1);
+        const subtotal = itemPreco * itemQtd;
 
         itemDiv.innerHTML = `
-          <div class="item-left" style="display:flex; gap:12px; align-items:center;">
-            <img src="${item.img || 'https://via.placeholder.com/60'}" alt="${escapeHtml(item.name)}" width="60" height="60" style="object-fit:cover;border-radius:8px;">
-            <div>
-              <div class="item-name">${escapeHtml(item.name)}</div>
-              <div class="small">R$ ${formatBRL(item.price)} cada</div>
-            </div>
+          <div class="item-image">
+            <img src="${itemImagem}" alt="${escapeHtml(itemNome)}">
           </div>
-
-          <div class="item-right" style="text-align:right; display:flex; flex-direction:column; gap:6px; align-items:flex-end;">
-            <div style="display:flex; gap:8px; align-items:center;">
-              <input class="qty-input" type="number" min="1" value="${Number(item.qty) || 1}" style="width:72px; padding:6px; border-radius:6px; border:1px solid #ddd;">
-              <button class="btn-remove" data-index="${index}" title="Remover" style="background:none;border:none;color:#a180f3;cursor:pointer;">Remover</button>
-            </div>
-            <div class="price">Subtotal: R$ ${formatBRL(subtotal)}</div>
+          <div class="item-info">
+            <h4>${escapeHtml(itemNome)}</h4>
+            <p class="item-price">R$ ${formatBRL(itemPreco)}</p>
           </div>
+          <div class="item-quantity">
+            <button onclick="diminuirQuantidade(${index})">-</button>
+            <span>${itemQtd}</span>
+            <button onclick="aumentarQuantidade(${index})">+</button>
+          </div>
+          <div class="item-total">
+            <p>R$ ${formatBRL(subtotal)}</p>
+          </div>
+          <button class="item-remove" onclick="removerItem(${index})">
+            <i class="bi bi-trash"></i>
+          </button>
         `;
 
         productsContainer.appendChild(itemDiv);
-
-        // listener quantidade
-        const qtyInput = itemDiv.querySelector(".qty-input");
-        qtyInput.addEventListener("change", (e) => {
-          const v = parseInt(e.target.value, 10);
-          if (isNaN(v) || v < 1) {
-            e.target.value = 1;
-            cart[index].qty = 1;
-          } else {
-            cart[index].qty = v;
-          }
-          saveState();
-          renderCart();
-        });
-
-        // remove
-        const removeBtn = itemDiv.querySelector(".btn-remove");
-        removeBtn.addEventListener("click", () => {
-          cart.splice(index, 1);
-          saveState();
-          renderCart();
-          updatePaymentUI(selectedPayment);
-        });
       });
 
       updateTotal();
@@ -163,21 +147,91 @@
 
     // calcula e atualiza total na resume
     function updateTotal() {
-      const total = cart.reduce((acc, it) => acc + (Number(it.price) || 0) * (Number(it.qty) || 1), 0);
+      const total = cart.reduce((acc, it) => {
+        const preco = Number(it.preco || it.price || 0);
+        const qtd = Number(it.quantidade || it.qty || 1);
+        return acc + (preco * qtd);
+      }, 0);
+      
       if (cartTotalEl) {
         cartTotalEl.textContent = `R$ ${formatBRL(total)}`;
       }
       saveState();
     }
 
-    // adiciona item ao carrinho (exposto globalmente)
-    window.addToCart = function (name, price, img, qty = 1) {
-      const found = cart.find(it => it.name === name && Number(it.price) === Number(price));
-      if (found) {
-        found.qty = Number(found.qty || 0) + Number(qty || 1);
-      } else {
-        cart.push({ name, price: Number(price || 0), img: img || "", qty: Number(qty || 1) });
+    // FUNÇÕES GLOBAIS para compatibilidade
+    window.aumentarQuantidade = function(index) {
+      if (cart[index]) {
+        if (cart[index].quantidade) cart[index].quantidade++;
+        else if (cart[index].qty) cart[index].qty++;
+        else cart[index].quantidade = 2;
+        
+        saveState();
+        renderCart();
       }
+    };
+
+    window.diminuirQuantidade = function(index) {
+      if (cart[index]) {
+        const qtdAtual = cart[index].quantidade || cart[index].qty || 1;
+        
+        if (qtdAtual > 1) {
+          if (cart[index].quantidade) cart[index].quantidade--;
+          else if (cart[index].qty) cart[index].qty--;
+          
+          saveState();
+          renderCart();
+        } else {
+          window.removerItem(index);
+        }
+      }
+    };
+
+    window.removerItem = function(index) {
+      if (confirm('Deseja remover este item do carrinho?')) {
+        cart.splice(index, 1);
+        saveState();
+        renderCart();
+        updatePaymentUI(selectedPayment);
+      }
+    };
+
+    // adiciona item ao carrinho (exposto globalmente)
+    window.adicionarAoCarrinho = window.addToCart = function (nomeOuObj, preco, imagem, quantidade = 1) {
+      // Aceita objeto ou parâmetros separados
+      let itemNovo;
+      
+      if (typeof nomeOuObj === 'object') {
+        itemNovo = nomeOuObj;
+      } else {
+        itemNovo = {
+          id: Date.now(),
+          nome: nomeOuObj,
+          preco: Number(preco || 0),
+          imagem: imagem || "",
+          quantidade: Number(quantidade || 1)
+        };
+      }
+
+      // Verificar se já existe (por nome e preço)
+      const itemNome = itemNovo.nome || itemNovo.name;
+      const itemPreco = Number(itemNovo.preco || itemNovo.price || 0);
+      
+      const found = cart.find(it => {
+        const nome = it.nome || it.name;
+        const preco = Number(it.preco || it.price || 0);
+        return nome === itemNome && preco === itemPreco;
+      });
+
+      if (found) {
+        // Aumenta quantidade
+        if (found.quantidade) found.quantidade += Number(itemNovo.quantidade || itemNovo.qty || 1);
+        else if (found.qty) found.qty += Number(itemNovo.quantidade || itemNovo.qty || 1);
+        else found.quantidade = Number(itemNovo.quantidade || itemNovo.qty || 1);
+      } else {
+        cart.push(itemNovo);
+      }
+
       saveState();
       renderCart();
       updatePaymentUI(selectedPayment);
@@ -195,8 +249,8 @@
           const img = match.querySelector("img") ? match.querySelector("img").cloneNode(true) : null;
           selectBtn.innerHTML = "";
           if (img) {
-            img.style.width = "18px";
-            img.style.height = "18px";
+            img.style.width = "24px";
+            img.style.height = "24px";
             img.style.objectFit = "contain";
             selectBtn.appendChild(img);
           }
@@ -213,20 +267,23 @@
     if (selectBtn && optionsList) {
       selectBtn.addEventListener("click", (e) => {
         e.stopPropagation();
-        customSelect.classList.toggle("open");
+        optionsList.classList.toggle("active");
+        customSelect?.classList.toggle("open");
       });
 
       optionsItems.forEach(li => {
         li.addEventListener("click", () => {
           const value = li.dataset.value || li.getAttribute("data-value");
           updatePaymentUI(value);
-          customSelect.classList.remove("open");
+          optionsList.classList.remove("active");
+          customSelect?.classList.remove("open");
         });
       });
 
       document.addEventListener("click", (e) => {
         if (!e.target.closest(".custom-select")) {
-          customSelect.classList.remove("open");
+          optionsList?.classList.remove("active");
+          customSelect?.classList.remove("open");
         }
       });
     }
@@ -248,8 +305,9 @@
         }
 
         saveState();
-        const target = "finalizar.html?payment=" + encodeURIComponent(selectedPayment);
-        window.location.href = target;
+        
+        // Redirecionar para página de finalização
+        window.location.href = "finalizar.php?payment=" + encodeURIComponent(selectedPayment);
       });
     }
 
@@ -257,7 +315,9 @@
     if (selectedPayment) updatePaymentUI(selectedPayment);
     renderCart();
 
-    // debug
+    // Expor funções globalmente para debug
+    window.carregarCarrinho = renderCart;
+    window.atualizarTotal = updateTotal;
     window._cartDebug = { cart, updateTotal, updatePaymentUI, renderCart };
   }
 })();
